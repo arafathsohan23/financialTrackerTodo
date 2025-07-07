@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+     <!-- PWA Meta Tags -->
+     <meta name="theme-color" content="#ffffff"/> <!-- Match manifest theme_color -->
+     <meta name="description" content="Google Keep style financial notes."> <!-- Match manifest description -->
+     <link rel="manifest" href="manifest.json">
+     <link rel="apple-touch-icon" href="icons/icon-192x192.png"> <!-- Basic iOS icon -->
+
+     <!-- Fonts & Icons -->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+     <!-- Stylesheet -->
+     <link rel="stylesheet" href="style.css">
+
+     <title>Finance Notes</title>
+ </head>
+<body>
+
+    <header>
+        <h1>Finance Notes</h1>
+    </header>
+
+    <main>
+        <div id="notes-container">
+            <!-- Note cards will be dynamically inserted here -->
+        </div>
+    </main>
+
+    <!-- Floating Action Button (FAB) to add new notes -->
+    <button id="add-note-btn" class="fab" aria-label="Add new note">
+        <span class="material-icons-outlined">add</span>
+    </button>
+
+    <footer>
+        <div class="total-section">
+            <span>Global Balance:</span>
+            <span id="global-total-amount">0.00</span>
+        </div>
+    </footer>
+
+    <!-- Template for a Note Card -->
+    <template id="note-template">
+        <div class="note-card" tabindex="0">
+            <input type="text" class="note-title-input" placeholder="Title" aria-label="Note title">
+             <div class="note-body">
+                <ul class="note-items-list" aria-label="Financial items for this note">
+                    <!-- Items added here -->
+                </ul>
+                <form class="add-note-item-form" aria-label="Add item to this note">
+                    <input type="text" class="item-description-input" placeholder="Description" required>
+                    <input type="number" step="any" class="item-amount-input" placeholder="Amount (+/-)" required>
+                    <button type="submit" class="add-item-btn-small" aria-label="Add item">
+                        <span class="material-icons-outlined">add</span>
+                    </button>
+                </form>
+            </div>
+            <div class="note-footer">
+                <span class="note-total-label">Note Total:</span>
+                <span class="note-total-amount">0.00</span>
+                <button class="delete-note-btn" aria-label="Delete note">
+                    <span class="material-icons-outlined">delete_outline</span>
+                </button>
+            </div>
+        </div>
+    </template>
+
+     <!-- Template for a Note Item -->
+    <template id="note-item-template">
+        <li class="note-item">
+            <input type="checkbox" class="item-checkbox" aria-label="Mark item done">
+            <div class="item-details">
+                 <span class="item-description"></span>
+                 <span class="item-amount"></span>
+            </div>
+            <button class="delete-item-btn" aria-label="Delete item">
+                <span class="material-icons-outlined">close</span>
+            </button>
+        </li>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+</html>

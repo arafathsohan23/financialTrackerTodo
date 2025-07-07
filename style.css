@@ -1,0 +1,396 @@
+/* --- Base & Variables --- */
+:root {
+    --primary-bg: #e8eaed; /* Lighter gray, closer to Keep */
+    --card-bg: #ffffff;
+    --text-color: #202124; /* Google's primary text color */
+    --secondary-text-color: #5f6368;
+    --border-color: #dadce0;
+    --accent-color: #1a73e8; /* Google blue */
+    --accent-hover: #1765cc;
+    --delete-color: #d93025; /* Google red */
+    --delete-hover: #c5221f;
+    --income-color: #1e8e3e; /* Google green */
+    --expense-color: #d93025; /* Google red */
+    --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    --shadow-hover: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+    --border-radius: 8px;
+    --font-family: 'Roboto', sans-serif;
+    --title-font-family: 'Google Sans', sans-serif; /* Keep uses Google Sans often */
+    --checked-color: #5f6368; /* Muted gray for checked items */
+    --checkbox-accent: var(--accent-color);
+}
+
+/* --- Base Resets --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--primary-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding-bottom: 70px; /* Space for fixed footer */
+    overscroll-behavior-y: contain; /* Prevent pull-to-refresh */
+}
+
+/* --- Header --- */
+header {
+    background-color: var(--card-bg);
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    font-family: var(--title-font-family);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+}
+
+/* --- Main Content & Notes Container --- */
+main {
+    padding: 1.5rem 1rem; /* More padding top/bottom, less side */
+    max-width: 1200px; /* Allow wider layout */
+    margin: 0 auto;
+}
+
+#notes-container {
+    display: grid;
+    /* Masonry-like effect with auto columns */
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    align-items: start; /* Align items to the top */
+}
+
+/* --- Note Card --- */
+.note-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem; /* Ensure gap even if grid fails */
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    break-inside: avoid; /* Help with masonry effect */
+    overflow: hidden; /* Clip content */
+}
+
+.note-card:hover,
+.note-card:focus-within { /* Style when card or its content has focus */
+    box-shadow: var(--shadow-hover);
+}
+
+.note-card.adding { animation: fadeInScale 0.3s ease forwards; }
+.note-card.deleting { animation: fadeOutScale 0.3s ease forwards; }
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+@keyframes fadeOutScale {
+     from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
+}
+
+
+/* Note Title */
+.note-title-input {
+    font-family: var(--title-font-family);
+    font-size: 1.1rem;
+    font-weight: 500;
+    border: none;
+    outline: none;
+    padding: 0.4rem 0;
+    margin-bottom: 0.6rem;
+    width: 100%;
+    background: transparent;
+}
+.note-title-input::placeholder {
+    color: var(--secondary-text-color);
+    opacity: 0.8;
+}
+
+/* Note Body & Item List */
+.note-body {
+    flex-grow: 1;
+    margin-bottom: 0.5rem;
+}
+
+.note-items-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0.8rem;
+}
+
+/* Individual Note Item */
+.note-item {
+    display: flex;
+    align-items: center; /* Align checkbox, details, and button vertically */
+    gap: 0.5rem;
+    padding: 0.4rem 0; /* Slightly more padding */
+    border-bottom: 1px solid #eee; /* Light separator */
+    transition: opacity 0.3s ease; /* For checked state */
+}
+.note-item:last-child {
+    border-bottom: none;
+}
+
+/* Checkbox Styles */
+.item-checkbox {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0; /* Prevent checkbox from shrinking */
+    accent-color: var(--checkbox-accent); /* Modern way to color checkboxes */
+    cursor: pointer;
+    margin-right: 0.25rem; /* Small space after checkbox */
+}
+
+/* Container for description and amount */
+.item-details {
+    flex-grow: 1; /* Takes up available space */
+    display: flex; /* Use flexbox */
+    justify-content: space-between; /* Push description left, amount right */
+    align-items: center; /* Align them vertically if they wrap */
+    gap: 0.5rem; /* Space between description and amount */
+    flex-wrap: wrap;
+    overflow: hidden; /* Prevent long text causing issues */
+}
+
+.item-description {
+    font-size: 0.95rem;
+    word-break: break-word;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.item-amount {
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent amount from shrinking */
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+.item-amount.income { color: var(--income-color); }
+.item-amount.expense { color: var(--expense-color); }
+
+/* Checked State Styling */
+.note-item.checked {
+    opacity: 0.7; /* Slightly fade the entire item */
+}
+.note-item.checked .item-description {
+    text-decoration: line-through;
+    color: var(--checked-color);
+}
+.note-item.checked .item-amount {
+    text-decoration: line-through;
+    color: var(--checked-color);
+}
+
+.delete-item-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-text-color);
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, opacity 0.2s;
+    flex-shrink: 0; /* Ensure delete button doesn't shrink */
+}
+.delete-item-btn:hover {
+    color: var(--delete-color);
+    opacity: 1;
+}
+.delete-item-btn .material-icons-outlined { font-size: 18px; }
+
+/* Add Item Form within Note */
+.add-note-item-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border-color); /* Separator */
+}
+
+.add-note-item-form input {
+    border: none; /* Cleaner look inside card */
+    outline: none;
+    padding: 0.4rem 0;
+    background: transparent;
+    font-size: 0.9rem;
+}
+.add-note-item-form input::placeholder {
+    color: var(--secondary-text-color);
+    opacity: 0.8;
+}
+.add-note-item-form .item-description-input {
+    flex-grow: 1;
+    border-bottom: 1px solid transparent; /* Underline on focus */
+    transition: border-color 0.2s ease;
+}
+.add-note-item-form .item-description-input:focus {
+    border-bottom-color: var(--accent-color);
+}
+.add-note-item-form .item-amount-input {
+    width: 105px; /* Increased width for amount placeholder */
+    flex-shrink: 0; /* Prevent shrinking if description gets very long */
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+.add-note-item-form .item-amount-input:focus {
+    border-bottom-color: var(--accent-color);
+}
+
+.add-item-btn-small {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+.add-item-btn-small:hover {
+    color: var(--accent-hover);
+}
+.add-item-btn-small .material-icons-outlined { font-size: 22px; }
+
+/* Note Footer */
+.note-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Push total left, delete right */
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
+}
+
+.note-total-label {
+    font-weight: 500;
+}
+.note-total-amount {
+    font-weight: 700;
+    margin-left: 0.5em; /* Space after label */
+    color: var(--text-color); /* Default color */
+    flex-grow: 1; /* Take up space to push delete button right */
+    text-align: center; /* Center the total amount */
+}
+.note-total-amount.income { color: var(--income-color); }
+.note-total-amount.expense { color: var(--delete-color); }
+.note-total-amount.zero { color: var(--text-color); }
+
+.delete-note-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-text-color);
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, opacity 0.2s;
+}
+.delete-note-btn:hover {
+    color: var(--delete-color);
+    opacity: 1;
+}
+.delete-note-btn .material-icons-outlined { font-size: 20px; }
+
+
+/* --- Floating Action Button (FAB) --- */
+.fab {
+    position: fixed;
+    bottom: 80px; /* Above the footer */
+    right: 1.5rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    z-index: 200;
+}
+.fab:hover {
+    background-color: var(--accent-hover);
+}
+.fab:active {
+    transform: scale(0.95);
+}
+.fab .material-icons-outlined {
+    font-size: 28px;
+}
+
+/* --- Footer / Global Total --- */
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+
+.total-section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+}
+
+#global-total-amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+#global-total-amount.income { color: var(--income-color); }
+#global-total-amount.expense { color: var(--delete-color); }
+#global-total-amount.zero { color: var(--text-color); }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 600px) {
+    main { padding: 1rem 0.5rem; }
+    #notes-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 0.75rem;
+    }
+    .note-card { padding: 0.6rem 0.8rem; }
+    .fab { bottom: 70px; right: 1rem; }
+    footer .total-section { padding-left: 1rem; padding-right: 1rem; } /* Adjust footer padding */
+}
